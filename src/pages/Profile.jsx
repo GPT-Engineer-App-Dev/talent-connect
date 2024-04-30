@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Box, Container, Heading, Text, VStack, Button, Input, Stack } from "@chakra-ui/react";
+import { Box, Container, Heading, Text, VStack, Button, Input, Stack, useToast } from "@chakra-ui/react";
 import { client } from "../../lib/crud";
 
 const developers = [
@@ -37,6 +37,7 @@ const Profile = () => {
 
   const [editingMessage, setEditingMessage] = useState(null);
 
+  const toast = useToast();
   const sendMessage = async () => {
     const timestamp = editingMessage ? editingMessage.timestamp : new Date().toISOString();
     const newMessage = { sender: "currentUser", recipientId: parseInt(id), message, timestamp };
@@ -46,6 +47,13 @@ const Profile = () => {
       setMessages(messages.map((m) => (m.timestamp === timestamp ? newMessage : m)));
       setMessage("");
       setEditingMessage(null);
+      toast({
+        title: "Message updated successfully!",
+        description: "Your changes have been saved.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
