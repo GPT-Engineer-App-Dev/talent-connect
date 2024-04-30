@@ -67,7 +67,6 @@ const Index = () => {
                     })}
                   </HStack>
                 </VStack>
-                <IconButton aria-label={`Send message to ${dev.name}`} icon={<FaEnvelope />} onClick={() => sendMessage(dev.name)} />
               </HStack>
             </Box>
           ))}
