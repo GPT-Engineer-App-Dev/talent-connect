@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { Box, Container, Heading, Input, InputGroup, InputLeftElement, Stack, Tag, Text, Button, useToast, VStack, HStack, IconButton } from "@chakra-ui/react";
 import { FaSearch, FaEnvelope } from "react-icons/fa";
 
@@ -54,7 +55,11 @@ const Index = () => {
             <Box key={dev.id} p={5} shadow="md" borderWidth="1px">
               <HStack justifyContent="space-between">
                 <VStack align="start">
-                  <Text fontWeight="bold">{dev.name}</Text>
+                  <Link to={`/profile/${dev.id}`} style={{ textDecoration: "none" }}>
+                    <Text fontWeight="bold" color="teal.500">
+                      {dev.name}
+                    </Text>
+                  </Link>
                   <Text>{dev.location}</Text>
                   <HStack>
                     {dev.technologies.map((tech) => {
