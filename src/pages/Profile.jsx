@@ -35,13 +35,21 @@ const Profile = () => {
     fetchMessages();
   }, [id]);
 
+  const [editingMessage, setEditingMessage] = useState(null);
+
   const sendMessage = async () => {
-    const timestamp = new Date().toISOString();
+    const timestamp = editingMessage ? editingMessage.timestamp : new Date().toISOString();
     const newMessage = { sender: "currentUser", recipientId: parseInt(id), message, timestamp };
-    const success = await client.set(`message:${id}:${timestamp}`, newMessage);
+    const method = editingMessage ? "update" : "set";
+    const success = await client[method](`message:${id}:${timestamp}`, newMessage);
     if (success) {
-      setMessages([...messages, newMessage]);
+      if (editingMessage) {
+        setMessages(messages.map((m) => (m.timestamp === timestamp ? newMessage : m)));
+      } else {
+        setMessages([...messages, newMessage]);
+      }
       setMessage("");
+      setEditingMessage(null);
     }
   };
 
@@ -62,12 +70,32 @@ const Profile = () => {
           Send Message
         </Button>
         <Stack spacing={2}>
-          {messages.map((msg, index) => (
-            <Box key={index} p={3} shadow="md" borderWidth="1px">
-              <Text>{msg.message}</Text>
-              <Text fontSize="sm">Sent on {new Date(msg.timestamp).toLocaleString()}</Text>
-            </Box>
-          ))}
+          {messages.map((msg, index) => {
+            const handleDelete = async () => {
+              const success = await client.delete(`message:${id}:${msg.timestamp}`);
+              if (success) {
+                setMessages(messages.filter((m) => m.timestamp !== msg.timestamp));
+              }
+            };
+
+            const handleEdit = () => {
+              setMessage(msg.message);
+              setEditingMessage(msg);
+            };
+
+            return (
+              <Box key={index} p={3} shadow="md" borderWidth="1px">
+                <Text>{msg.message}</Text>
+                <Text fontSize="sm">Sent on {new Date(msg.timestamp).toLocaleString()}</Text>
+                <Button colorScheme="red" size="sm" onClick={handleDelete}>
+                  Delete
+                </Button>
+                <Button colorScheme="blue" size="sm" onClick={handleEdit}>
+                  Edit
+                </Button>
+              </Box>
+            );
+          })}
         </Stack>
       </VStack>
     </Container>
