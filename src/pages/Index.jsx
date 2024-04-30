@@ -40,6 +40,17 @@ const Index = () => {
   return (
     <Container maxW="container.xl" py={8}>
       <VStack spacing={8}>
+        <Button
+          onClick={() => {
+            localStorage.removeItem("auth_token");
+            window.location.href = "/login";
+          }}
+          colorScheme="red"
+          size="sm"
+          style={{ float: "right" }}
+        >
+          Logout
+        </Button>
         <Heading as="h1" size="xl">
           Particles Marketplace
         </Heading>
