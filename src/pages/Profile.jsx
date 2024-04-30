@@ -43,11 +43,7 @@ const Profile = () => {
     const method = editingMessage ? "update" : "set";
     const success = await client[method](`message:${id}:${timestamp}`, newMessage);
     if (success) {
-      if (editingMessage) {
-        setMessages(messages.map((m) => (m.timestamp === timestamp ? newMessage : m)));
-      } else {
-        setMessages([...messages, newMessage]);
-      }
+      setMessages(messages.map((m) => (m.timestamp === timestamp ? newMessage : m)));
       setMessage("");
       setEditingMessage(null);
     }
