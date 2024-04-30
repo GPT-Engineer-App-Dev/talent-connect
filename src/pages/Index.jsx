@@ -9,6 +9,14 @@ const developers = [
   { id: 4, name: "Aisha Mohammed", location: "Lagos, Nigeria", technologies: ["Node.js", "Go"] },
 ];
 
+const techColorScheme = {
+  React: "teal",
+  "Node.js": "green",
+  ".NET": "purple",
+  Go: "orange",
+  JavaScript: "yellow",
+};
+
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const toast = useToast();
@@ -49,11 +57,14 @@ const Index = () => {
                   <Text fontWeight="bold">{dev.name}</Text>
                   <Text>{dev.location}</Text>
                   <HStack>
-                    {dev.technologies.map((tech) => (
-                      <Tag key={tech} size="sm" colorScheme="blue">
-                        {tech}
-                      </Tag>
-                    ))}
+                    {dev.technologies.map((tech) => {
+                      const colorScheme = techColorScheme[tech] || "gray";
+                      return (
+                        <Tag key={tech} size="sm" colorScheme={colorScheme}>
+                          {tech}
+                        </Tag>
+                      );
+                    })}
                   </HStack>
                 </VStack>
                 <IconButton aria-label={`Send message to ${dev.name}`} icon={<FaEnvelope />} onClick={() => sendMessage(dev.name)} />
