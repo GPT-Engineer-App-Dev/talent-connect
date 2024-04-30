@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Box, Container, Heading, Text, VStack, Button } from "@chakra-ui/react";
+import { Box, Container, Heading, Text, VStack, Button, Input, Stack } from "@chakra-ui/react";
+import { client } from "../../lib/crud";
 
 const developers = [
   { id: 1, name: "John Doe", location: "New York, USA", technologies: ["React", "Node.js"] },
@@ -21,6 +22,29 @@ const Profile = () => {
     );
   }
 
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    async function fetchMessages() {
+      const fetchedMessages = await client.getWithPrefix(`message:${id}`);
+      if (fetchedMessages) {
+        setMessages(fetchedMessages.map((msg) => msg.value));
+      }
+    }
+    fetchMessages();
+  }, [id]);
+
+  const sendMessage = async () => {
+    const timestamp = new Date().toISOString();
+    const newMessage = { sender: "currentUser", recipientId: parseInt(id), message, timestamp };
+    const success = await client.set(`message:${id}:${timestamp}`, newMessage);
+    if (success) {
+      setMessages([...messages, newMessage]);
+      setMessage("");
+    }
+  };
+
   return (
     <Container maxW="container.md" py={8}>
       <VStack spacing={4} align="stretch">
@@ -33,7 +57,18 @@ const Profile = () => {
             <Text key={tech}>{tech}</Text>
           ))}
         </VStack>
-        <Button colorScheme="blue">Send Message</Button>
+        <Input placeholder="Type your message here..." value={message} onChange={(e) => setMessage(e.target.value)} />
+        <Button colorScheme="blue" onClick={sendMessage}>
+          Send Message
+        </Button>
+        <Stack spacing={2}>
+          {messages.map((msg, index) => (
+            <Box key={index} p={3} shadow="md" borderWidth="1px">
+              <Text>{msg.message}</Text>
+              <Text fontSize="sm">Sent on {new Date(msg.timestamp).toLocaleString()}</Text>
+            </Box>
+          ))}
+        </Stack>
       </VStack>
     </Container>
   );
